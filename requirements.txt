@@ -1,0 +1,4 @@
+# optional QR images (pure Python)
+segno>=1.5
+# the errcode package itself (adds the "errcode" command and `python -m errcode`)
+-e .

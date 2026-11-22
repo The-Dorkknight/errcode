@@ -1,0 +1,42 @@
+name: Bug report
+description: Something is wrong, or a dictionary entry is missing or misleading
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ErrCode is a work-in-progress project. Thanks for helping. Please do not paste passwords, tokens or private paths.
+  - type: input
+    id: version
+    attributes:
+      label: ErrCode version
+      description: Output of `python -m errcode --version` (or the title bar of the demo window)
+      placeholder: errcode 0.2.0-wip (built 2026-11-02 22:20)
+    validations:
+      required: true
+  - type: input
+    id: platform
+    attributes:
+      label: Platform
+      description: Operating system and version, and Python version (`python --version`)
+      placeholder: Linux Mint 22, Python 3.12.3
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what did you expect?
+    validations:
+      required: true
+  - type: input
+    id: report
+    attributes:
+      label: Report string (if any)
+      description: The quick codes and the `EC2-...` string (or an older `EC1-...` string), if you have them
+      placeholder: E102 W706  EC2-34739026849376627710778795763564242769252885287944249844
+  - type: textarea
+    id: log
+    attributes:
+      label: Log or diagnostics
+      description: The log text (trimmed to the relevant part) or the output of `python -m errcode scan yourlog.log`
+      render: text

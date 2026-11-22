@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ErrCode</title>
+<meta name="description" content="Drop-in error-code plugin for Python: 3-digit codes, a 287-entry dictionary of Python, C++, Windows, Linux, macOS, network, GPU, embedded and 3D-printer failures, reports packed as digits for QR codes, and a phone decoder. Source-available, non-commercial. Work in progress.">
+<link rel="icon" href="images/favicon-64.png">
+<link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+<!-- Required Notice: Copyright Matthew Armstrong (https://github.com/The-Dorkknight) -->
+<!-- Licensed under the PolyForm Noncommercial License 1.0.0. No warranty. -->
+<style>
+:root{
+  --bg:#f6f8fb; --card:#ffffff; --ink:#14212e; --muted:#51606f; --line:#d7dee6;
+  --accent:#16324f; --accent-ink:#ffffff; --warn-bg:#fff4d6; --warn-ink:#5c4400; --warn-line:#e8c766; --code:#eef2f7;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f1720; --card:#17212d; --ink:#e6edf4; --muted:#9db0c2; --line:#2a3846;
+    --accent:#8cc3ff; --accent-ink:#0b1622; --warn-bg:#3a2f08; --warn-ink:#ffe39a; --warn-line:#7a6320; --code:#101922;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f1720; --card:#17212d; --ink:#e6edf4; --muted:#9db0c2; --line:#2a3846;
+  --accent:#8cc3ff; --accent-ink:#0b1622; --warn-bg:#3a2f08; --warn-ink:#ffe39a; --warn-line:#7a6320; --code:#101922;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:980px;margin:0 auto;padding:0 16px}
+.banner{background:var(--warn-bg);color:var(--warn-ink);border-bottom:1px solid var(--warn-line);padding:10px 16px;text-align:center;font-weight:700}
+header.hero{padding:36px 0 12px}
+.hero-grid{display:grid;grid-template-columns:1fr;gap:24px;align-items:center}
+@media(min-width:820px){.hero-grid{grid-template-columns:5fr 6fr}}
+.brand{display:flex;align-items:center;gap:14px}
+.brand img{width:64px;height:64px;border-radius:12px;border:1px solid var(--line);background:#fff}
+h1{margin:0;font-size:2rem;line-height:1.15}
+.tag{color:var(--muted);margin:2px 0 0}
+.lead{font-size:1.1rem;margin:16px 0}
+.btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
+.btn{display:inline-block;padding:10px 16px;border-radius:10px;border:1px solid var(--accent);color:var(--accent);text-decoration:none;font-weight:600}
+.btn.primary{background:var(--accent);color:var(--accent-ink)}
+.shot{width:100%;height:auto;border:1px solid var(--line);border-radius:10px;background:var(--card)}
+.shotcap{color:var(--muted);font-size:.85rem;margin:6px 0 0}
+section{padding:22px 0}
+h2{font-size:1.35rem;margin:0 0 12px}
+.cards{display:grid;grid-template-columns:1fr;gap:12px}
+@media(min-width:640px){.cards{grid-template-columns:1fr 1fr}}
+@media(min-width:900px){.cards{grid-template-columns:repeat(3,1fr)}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.card h3{margin:0 0 6px;font-size:1.02rem}
+.card p{margin:0;color:var(--muted);font-size:.95rem}
+pre,code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:12px;overflow-x:auto;font-size:.88rem;margin:8px 0}
+code{background:var(--code);padding:1px 5px;border-radius:5px;font-size:.9em;overflow-wrap:anywhere}
+pre code{background:none;padding:0}
+table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;display:block;overflow-x:auto}
+th,td{padding:8px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;font-size:.93rem}
+th{background:var(--code)}
+.note{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;color:var(--muted);font-size:.93rem}
+footer{border-top:1px solid var(--line);margin-top:20px;padding:20px 0 40px;color:var(--muted);font-size:.9rem}
+footer a{color:var(--accent)}
+a{color:var(--accent)}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<div class="banner">WORK IN PROGRESS: MANY FEATURES MAY BE BROKEN (0.2.0-wip, proof of concept)</div>
+
+<header class="hero"><div class="wrap hero-grid">
+  <div>
+    <div class="brand"><img src="images/icon-512.png" alt="ErrCode icon: a QR code" width="64" height="64">
+      <div><h1>ErrCode</h1><p class="tag">Source-available &middot; Non-commercial</p></div></div>
+    <p class="lead">Turn "something went wrong" into 3-digit codes you can read off a phone camera, say on the phone, or look up on a web page. One line in your Python program ranks the failures, ignores noise like "12% downloading", and packs the whole report, with details, into a short string of digits for a QR code.</p>
+    <div class="btns">
+      <a class="btn primary" id="lnk-repo" href="https://github.com/The-Dorkknight/errcode">View on GitHub</a>
+      <a class="btn" href="decode.html">Open the decoder</a>
+      <a class="btn" id="lnk-rel" href="https://github.com/The-Dorkknight/errcode/releases">Releases</a>
+    </div>
+  </div>
+  <div>
+    <img class="shot" src="images/gui-page.webp" alt="ErrCode demo window: a 60,000-line log reduced to 13 ranked codes and one QR code" width="1080" height="720">
+    <p class="shotcap">The demo window (the plugin is the product): a generated 60,000-line log becomes 13 codes and 168 digits. Screenshot from a Linux sandbox.</p>
+  </div>
+</div></header>
+
+<main class="wrap">
+<section>
+  <h2>One line to plug in</h2>
+<pre><code>import errcode
+errcode.install(app="myprog")</code></pre>
+  <p>At exit (or on a crash) it prints one footer to stderr, for example:</p>
+<pre><code>[errcode plugin_demo] E102 W706 W602  EC2-34739026849376627710778795763564242769252885287944249844
+[errcode plugin_demo]   102  ERROR PY.TK_MISSING    Python's Tk GUI toolkit (tkinter) is not installed.
+[errcode plugin_demo]   706  WARN  HW.GPU_FALLBACK  No usable GPU - running on the CPU path ...
+[errcode plugin_demo]   602  WARN  NET.TIMEOUT      The network operation timed out.</code></pre>
+</section>
+
+<section>
+  <h2>What it does</h2>
+  <div class="cards">
+    <div class="card"><h3>3-digit codes</h3><p>Grouped like HTTP codes: 1xx Python, 3xx Windows, 4xx Linux, 8xx embedded and 3D printers, 9xx your own. Quick codes such as <code>E102 W706</code> fit in a sentence.</p></div>
+    <div class="card"><h3>Reports as digits</h3><p>Codes, counts and details (the missing module, the port, the exit code) packed into 20-digit blocks, each with a check digit. A typical report is a 25&times;25 QR; a 1 MB log came out at 108 digits.</p></div>
+    <div class="card"><h3>287-entry dictionary</h3><p>Python, C/C++, Windows, Linux, macOS, network, hardware/GPU, ESP32, STM32, RP2040, Klipper and Marlin failures, each with a plain-language meaning and a suggested fix.</p></div>
+    <div class="card"><h3>Phone decoder</h3><p>One offline web page decodes reports, QR parts and quick codes, and has a searchable code book. A QR can link straight to it.</p></div>
+    <div class="card"><h3>C encoder too</h3><p>A single header, no heap, so firmware can print the same report on a serial port or a display.</p></div>
+    <div class="card"><h3>Ranked, noise-free</h3><p>Worst first: fatal, error, warn, ok. Progress bars, percentages, download speeds and routine INFO lines are ignored; repeats collapse.</p></div>
+    <div class="card"><h3>Time and date inside</h3><p>The report carries when it was made (UTC, to the minute), so a scanned QR still says when it happened.</p></div>
+    <div class="card"><h3>Light on old hardware</h3><p>Pure Python, no GPU, no Pillow, no numpy. A generated 102,000-line log scanned in about 1.5 s with a peak of about 35 MB in a sandbox test (not on a real Core i3).</p></div>
+    <div class="card"><h3>Never in your way</h3><p>No network code. Hooks swallow their own errors. <code>ERRCODE_QUIET=1</code> silences the footer.</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>What does not exist yet</h2>
+  <table>
+    <tr><th>Not yet</th><th>Notes</th></tr>
+    <tr><td>Use in the other projects</td><td>Planned next; see PLAN.md.</td></tr>
+    <tr><td>C encoder on a real microcontroller</td><td>Built and checked on Linux only.</td></tr>
+    <tr><td>Real-hardware testing</td><td>Tested on Linux only (Python 3.11 and 3.13 tests, Python 3.12 GUI on a virtual display). Not yet on real Windows, macOS, Raspberry Pi or an old Core i3.</td></tr>
+    <tr><td>Verified fixes for every entry</td><td>Messages and fixes were written from general knowledge; not each reproduced on a real machine.</td></tr>
+    <tr><td>PyPI release, installers</td><td>Install from GitHub with one requirements line.</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2>Install and run</h2>
+<pre><code>Linux / macOS:  ./run.sh
+Windows:        double-click run.bat</code></pre>
+  <p>The launcher makes a private virtual environment, installs the QR dependency (<code>segno</code>) and the package itself, and opens the demo window. Plugin and command line only need Python 3.8+; the demo window also needs tkinter. See the <a id="lnk-readme" href="https://github.com/The-Dorkknight/errcode#readme">README</a> for per-system hints.</p>
+</section>
+
+<section class="note">
+  <strong>Licence and disclaimer.</strong> Copyright Matthew Armstrong. Licensed under the PolyForm Noncommercial License 1.0.0: free to use and modify for non-commercial purposes; commercial use needs separate permission. Provided as is, with no warranty and no liability. This is source-available, not OSI open source. Not legal advice.
+</section>
+</main>
+
+<footer><div class="wrap">
+  <a id="lnk-lic" href="https://github.com/The-Dorkknight/errcode/blob/main/LICENSE.md">Licence</a> &middot;
+  <a id="lnk-third" href="https://github.com/The-Dorkknight/errcode/blob/main/THIRD_PARTY.md">Third-party notices</a> &middot;
+  <a id="lnk-sec" href="https://github.com/The-Dorkknight/errcode/security">Security</a>
+  <p>&copy; Matthew Armstrong. "QR Code" is a registered trademark of DENSO WAVE INCORPORATED.</p>
+</div></footer>
+
+<script>
+/* Work out owner/repo from the URL so links survive renames and forks; default to The-Dorkknight/errcode. */
+(function () {
+  var owner = "The-Dorkknight", repo = "errcode";
+  try {
+    var host = location.hostname, parts = location.pathname.split("/").filter(Boolean);
+    if (/\.github\.io$/i.test(host)) {
+      owner = host.split(".")[0];
+      if (parts.length) repo = parts[0];
+    }
+  } catch (e) {}
+  var base = "https://github.com/" + owner + "/" + repo;
+  var map = {"lnk-repo": base, "lnk-rel": base + "/releases", "lnk-readme": base + "#readme",
+             "lnk-lic": base + "/blob/main/LICENSE.md", "lnk-third": base + "/blob/main/THIRD_PARTY.md",
+             "lnk-sec": base + "/security"};
+  Object.keys(map).forEach(function (id) { var el = document.getElementById(id); if (el) el.href = map[id]; });
+})();
+</script>
+</body>
+</html>
